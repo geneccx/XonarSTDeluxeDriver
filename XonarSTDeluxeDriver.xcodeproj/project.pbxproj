@@ -1,0 +1,274 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		90E7E9C11A7855B600B4DA1C /* XonarSTDeluxeDriver.h in Headers */ = {isa = PBXBuildFile; fileRef = 90E7E9C01A7855B600B4DA1C /* XonarSTDeluxeDriver.h */; };
+		90E7E9C31A7855B600B4DA1C /* XonarSTDeluxeDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90E7E9C21A7855B600B4DA1C /* XonarSTDeluxeDriver.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		90E7E9BB1A7855B600B4DA1C /* XonarSTDeluxeDriver.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XonarSTDeluxeDriver.kext; sourceTree = BUILT_PRODUCTS_DIR; };
+		90E7E9BF1A7855B600B4DA1C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		90E7E9C01A7855B600B4DA1C /* XonarSTDeluxeDriver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XonarSTDeluxeDriver.h; sourceTree = "<group>"; };
+		90E7E9C21A7855B600B4DA1C /* XonarSTDeluxeDriver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = XonarSTDeluxeDriver.cpp; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		90E7E9B71A7855B600B4DA1C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		90E7E9B11A7855B600B4DA1C = {
+			isa = PBXGroup;
+			children = (
+				90E7E9BD1A7855B600B4DA1C /* XonarSTDeluxeDriver */,
+				90E7E9BC1A7855B600B4DA1C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		90E7E9BC1A7855B600B4DA1C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				90E7E9BB1A7855B600B4DA1C /* XonarSTDeluxeDriver.kext */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		90E7E9BD1A7855B600B4DA1C /* XonarSTDeluxeDriver */ = {
+			isa = PBXGroup;
+			children = (
+				90E7E9C01A7855B600B4DA1C /* XonarSTDeluxeDriver.h */,
+				90E7E9C21A7855B600B4DA1C /* XonarSTDeluxeDriver.cpp */,
+				90E7E9BE1A7855B600B4DA1C /* Supporting Files */,
+			);
+			path = XonarSTDeluxeDriver;
+			sourceTree = "<group>";
+		};
+		90E7E9BE1A7855B600B4DA1C /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				90E7E9BF1A7855B600B4DA1C /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		90E7E9B81A7855B600B4DA1C /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				90E7E9C11A7855B600B4DA1C /* XonarSTDeluxeDriver.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		90E7E9BA1A7855B600B4DA1C /* XonarSTDeluxeDriver */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 90E7E9C61A7855B600B4DA1C /* Build configuration list for PBXNativeTarget "XonarSTDeluxeDriver" */;
+			buildPhases = (
+				90E7E9B61A7855B600B4DA1C /* Sources */,
+				90E7E9B71A7855B600B4DA1C /* Frameworks */,
+				90E7E9B81A7855B600B4DA1C /* Headers */,
+				90E7E9B91A7855B600B4DA1C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = XonarSTDeluxeDriver;
+			productName = XonarSTDeluxeDriver;
+			productReference = 90E7E9BB1A7855B600B4DA1C /* XonarSTDeluxeDriver.kext */;
+			productType = "com.apple.product-type.kernel-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		90E7E9B21A7855B600B4DA1C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				ORGANIZATIONNAME = "Gene Chen";
+				TargetAttributes = {
+					90E7E9BA1A7855B600B4DA1C = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+				};
+			};
+			buildConfigurationList = 90E7E9B51A7855B600B4DA1C /* Build configuration list for PBXProject "XonarSTDeluxeDriver" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 90E7E9B11A7855B600B4DA1C;
+			productRefGroup = 90E7E9BC1A7855B600B4DA1C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				90E7E9BA1A7855B600B4DA1C /* XonarSTDeluxeDriver */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		90E7E9B91A7855B600B4DA1C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		90E7E9B61A7855B600B4DA1C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				90E7E9C31A7855B600B4DA1C /* XonarSTDeluxeDriver.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		90E7E9C41A7855B600B4DA1C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		90E7E9C51A7855B600B4DA1C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		90E7E9C71A7855B600B4DA1C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1.0.0d1;
+				INFOPLIST_FILE = XonarSTDeluxeDriver/Info.plist;
+				MODULE_NAME = com.genec.XonarSTDeluxeDriver;
+				MODULE_VERSION = 1.0.0d1;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = kext;
+			};
+			name = Debug;
+		};
+		90E7E9C81A7855B600B4DA1C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1.0.0d1;
+				INFOPLIST_FILE = XonarSTDeluxeDriver/Info.plist;
+				MODULE_NAME = com.genec.XonarSTDeluxeDriver;
+				MODULE_VERSION = 1.0.0d1;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = kext;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		90E7E9B51A7855B600B4DA1C /* Build configuration list for PBXProject "XonarSTDeluxeDriver" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				90E7E9C41A7855B600B4DA1C /* Debug */,
+				90E7E9C51A7855B600B4DA1C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		90E7E9C61A7855B600B4DA1C /* Build configuration list for PBXNativeTarget "XonarSTDeluxeDriver" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				90E7E9C71A7855B600B4DA1C /* Debug */,
+				90E7E9C81A7855B600B4DA1C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 90E7E9B21A7855B600B4DA1C /* Project object */;
+}
