@@ -275,6 +275,7 @@
 				90E7E9C81A7855B600B4DA1C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
