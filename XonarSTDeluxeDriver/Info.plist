@@ -22,25 +22,32 @@
 	<string>1</string>
 	<key>IOKitPersonalities</key>
 	<dict>
-		<key>CFBundleIdentifier</key>
-		<string>com.GeneC.driver.XonarSTDeluxeDriver</string>
-		<key>IOClass</key>
-		<string>com_GeneC_driver_XonarSTDeluxeDevice</string>
-		<key>IOPCIPrimaryMatch</key>
-		<string>0x878813F6</string>
-		<key>IOPCISecondaryMatch</key>
-		<string>0x835D1043</string>
-		<key>IOProviderClass</key>
-		<string>IOPCIDevice</string>
+		<key>XonarSTDeluxeDriver</key>
+		<dict>
+			<key>CFBundleIdentifier</key>
+			<string>com.GeneC.driver.XonarSTDeluxeDriver</string>
+			<key>IOClass</key>
+			<string>com_GeneC_driver_XonarSTDeluxeDevice</string>
+			<key>IOPCIPrimaryMatch</key>
+			<string>0x878813F6</string>
+			<key>IOPCISecondaryMatch</key>
+			<string>0x835D1043</string>
+			<key>IOProviderClass</key>
+			<string>IOPCIDevice</string>
+		</dict>
 	</dict>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2015 Gene Chen. All rights reserved.</string>
 	<key>OSBundleLibraries</key>
 	<dict>
 		<key>com.apple.iokit.IOAudioFamily</key>
-		<string>1.1fc6</string>
-		<key>com.apple.iokit.IOPCIDevice</key>
-		<string>1.0</string>
+		<string>200.6</string>
+		<key>com.apple.iokit.IOPCIFamily</key>
+		<string>2.9</string>
+		<key>com.apple.kpi.iokit</key>
+		<string>14.0</string>
+		<key>com.apple.kpi.libkern</key>
+		<string>14.0</string>
 	</dict>
 </dict>
 </plist>
