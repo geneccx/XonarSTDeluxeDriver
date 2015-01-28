@@ -52,6 +52,9 @@ bool XonarSTDeluxeAudioDevice::initHardware(IOService *provider)
         goto Done;
     }
     
+    pciDevice->setIOEnable(true);
+    pciDevice->setBusMasterEnable(true);
+    
     // Enable the PCI memory access - the kernel will panic if this isn't done before accessing the
     // mapped registers
     pciDevice->setMemoryEnable(true);

@@ -163,7 +163,6 @@ IOAudioStream *XonarSTDeluxeAudioEngine::createNewAudioStream(IOAudioStreamDirec
 {
     IOAudioStream *audioStream;
     
-    // For this sample device, we are only creating a single format and allowing 44.1KHz and 48KHz
     audioStream = new IOAudioStream;
     if (audioStream) {
         if (!audioStream->initWithAudioEngine(this, direction, 1)) {
