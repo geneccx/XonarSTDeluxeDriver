@@ -23,13 +23,13 @@
 
 OSDefineMetaClassAndStructors(XonarSTDeluxeAudioEngine, IOAudioEngine)
 
-bool XonarSTDeluxeAudioEngine::init(XonarSTDeluxeAudioDeviceRegisters *regs)
+bool XonarSTDeluxeAudioEngine::init(xonar_info *deviceInfo)
 {
     bool result = false;
     
-    IOLog("XonarSTDeluxeAudioEngine[%p]::init(%p)\n", this, regs);
+    IOLog("XonarSTDeluxeAudioEngine[%p]::init(%p)\n", this, deviceInfo);
     
-    if (!regs) {
+    if (!deviceInfo) {
         goto Done;
     }
     
@@ -37,7 +37,7 @@ bool XonarSTDeluxeAudioEngine::init(XonarSTDeluxeAudioDeviceRegisters *regs)
         goto Done;
     }
     
-    deviceRegisters = regs;
+    this->deviceInfo = deviceInfo;
     
     result = true;
     
@@ -275,11 +275,8 @@ UInt32 XonarSTDeluxeAudioEngine::getCurrentSampleFrame()
     // rather than after the current location.  The erase head will erase up to, but not including the sample
     // frame returned by this function.  If it is too large a value, sound data that hasn't been played will be
     // erased.
-    
-//#error getCurrentSampleFrame() - driver will not work until correct sample frame is returned
-    
-    // Change to return the real value
-    return 0;
+
+    return ((XonarSTDeluxeAudioDevice*)audioDevice)->cmi8788_read_4(MULTICH_ADDR);
 }
 
 IOReturn XonarSTDeluxeAudioEngine::performFormatChange(IOAudioStream *audioStream, const IOAudioStreamFormat *newFormat, const IOAudioSampleRate *newSampleRate)

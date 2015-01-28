@@ -18,11 +18,13 @@
 class IOFilterInterruptEventSource;
 class IOInterruptEventSource;
 
+struct xonar_info;
+
 class XonarSTDeluxeAudioEngine : public IOAudioEngine
 {
     OSDeclareDefaultStructors(XonarSTDeluxeAudioEngine)
     
-    XonarSTDeluxeAudioDeviceRegisters	*deviceRegisters;
+    xonar_info                      *deviceInfo;
     
     SInt16							*outputBuffer;
     SInt16							*inputBuffer;
@@ -31,7 +33,7 @@ class XonarSTDeluxeAudioEngine : public IOAudioEngine
     
 public:
     
-    virtual bool init(XonarSTDeluxeAudioDeviceRegisters *regs);
+    virtual bool init(xonar_info *deviceInfo);
     virtual void free();
     
     virtual bool initHardware(IOService *provider);

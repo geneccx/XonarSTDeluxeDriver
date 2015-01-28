@@ -20,6 +20,7 @@
 		90E7E9C21A7855B600B4DA1C /* XonarSTDeluxeAudioDevice.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = XonarSTDeluxeAudioDevice.cpp; sourceTree = "<group>"; };
 		90E7E9C91A78610900B4DA1C /* XonarSTDeluxeAudioEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XonarSTDeluxeAudioEngine.cpp; sourceTree = "<group>"; };
 		90E7E9CA1A78610900B4DA1C /* XonarSTDeluxeAudioEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XonarSTDeluxeAudioEngine.h; sourceTree = "<group>"; };
+		90E8D8C61A787BC6003C20B9 /* Xonar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Xonar.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +57,7 @@
 				90E7E9C21A7855B600B4DA1C /* XonarSTDeluxeAudioDevice.cpp */,
 				90E7E9C91A78610900B4DA1C /* XonarSTDeluxeAudioEngine.cpp */,
 				90E7E9CA1A78610900B4DA1C /* XonarSTDeluxeAudioEngine.h */,
+				90E8D8C61A787BC6003C20B9 /* Xonar.h */,
 				90E7E9BE1A7855B600B4DA1C /* Supporting Files */,
 			);
 			path = XonarSTDeluxeDriver;
