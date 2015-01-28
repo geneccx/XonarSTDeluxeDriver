@@ -63,7 +63,7 @@ bool XonarSTDeluxeAudioEngine::initHardware(IOService *provider)
     initialSampleRate.whole = INITIAL_SAMPLE_RATE;
     initialSampleRate.fraction = 0;
     
-    setDescription("Xonar Essence ST Deluxe Audio Engine");
+    setDescription("Xonar Essence ST Deluxe");
     
     setSampleRate(&initialSampleRate);
     
