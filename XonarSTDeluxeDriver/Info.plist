@@ -7,7 +7,7 @@
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.genec.$(PRODUCT_NAME:rfc1034identifier)</string>
+	<string>com.GeneC.driver.XonarSTDeluxeDriver</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -21,10 +21,26 @@
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>IOKitPersonalities</key>
-	<dict/>
+	<dict>
+		<key>CFBundleIdentifier</key>
+		<string>com.GeneC.driver.XonarSTDeluxeDriver</string>
+		<key>IOClass</key>
+		<string>com_GeneC_driver_XonarSTDeluxeDevice</string>
+		<key>IOPCIPrimaryMatch</key>
+		<string>0x878813F6</string>
+		<key>IOPCISecondaryMatch</key>
+		<string>0x835D1043</string>
+		<key>IOProviderClass</key>
+		<string>IOPCIDevice</string>
+	</dict>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2015 Gene Chen. All rights reserved.</string>
 	<key>OSBundleLibraries</key>
-	<dict/>
+	<dict>
+		<key>com.apple.iokit.IOAudioFamily</key>
+		<string>1.1fc6</string>
+		<key>com.apple.iokit.IOPCIDevice</key>
+		<string>1.0</string>
+	</dict>
 </dict>
 </plist>
