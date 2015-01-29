@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		90DBF9911A79DB2900C79CDD /* XonarSTDeluxeAudioFloatLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90DBF9901A79DB2900C79CDD /* XonarSTDeluxeAudioFloatLib.cpp */; };
 		90E7E9C11A7855B600B4DA1C /* XonarSTDeluxeAudioDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 90E7E9C01A7855B600B4DA1C /* XonarSTDeluxeAudioDevice.h */; };
 		90E7E9C31A7855B600B4DA1C /* XonarSTDeluxeAudioDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90E7E9C21A7855B600B4DA1C /* XonarSTDeluxeAudioDevice.cpp */; };
 		90E7E9CB1A78610900B4DA1C /* XonarSTDeluxeAudioEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90E7E9C91A78610900B4DA1C /* XonarSTDeluxeAudioEngine.cpp */; };
@@ -14,6 +15,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		90DBF9901A79DB2900C79CDD /* XonarSTDeluxeAudioFloatLib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XonarSTDeluxeAudioFloatLib.cpp; sourceTree = "<group>"; };
 		90E7E9BB1A7855B600B4DA1C /* XonarSTDeluxeDriver.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XonarSTDeluxeDriver.kext; sourceTree = BUILT_PRODUCTS_DIR; };
 		90E7E9BF1A7855B600B4DA1C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		90E7E9C01A7855B600B4DA1C /* XonarSTDeluxeAudioDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XonarSTDeluxeAudioDevice.h; sourceTree = "<group>"; };
@@ -57,6 +59,7 @@
 				90E7E9C21A7855B600B4DA1C /* XonarSTDeluxeAudioDevice.cpp */,
 				90E7E9C91A78610900B4DA1C /* XonarSTDeluxeAudioEngine.cpp */,
 				90E7E9CA1A78610900B4DA1C /* XonarSTDeluxeAudioEngine.h */,
+				90DBF9901A79DB2900C79CDD /* XonarSTDeluxeAudioFloatLib.cpp */,
 				90E8D8C61A787BC6003C20B9 /* Xonar.h */,
 				90E7E9BE1A7855B600B4DA1C /* Supporting Files */,
 			);
@@ -151,6 +154,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				90E7E9C31A7855B600B4DA1C /* XonarSTDeluxeAudioDevice.cpp in Sources */,
+				90DBF9911A79DB2900C79CDD /* XonarSTDeluxeAudioFloatLib.cpp in Sources */,
 				90E7E9CB1A78610900B4DA1C /* XonarSTDeluxeAudioEngine.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

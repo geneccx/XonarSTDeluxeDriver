@@ -81,7 +81,7 @@ bool XonarSTDeluxeAudioDevice::initHardware(IOService *provider)
     cmi8788_write_1(FUNCTION, bVal);
     
     /* set up DAC related settings */
-    sDac = I2S_MASTER | I2S_FMT_RATE48 | I2S_FMT_LJUST | I2S_FMT_BITS16 | XONAR_MCLOCK_512;
+    sDac = I2S_MASTER | I2S_FMT_RATE44 | I2S_FMT_LJUST | I2S_FMT_BITS16 | XONAR_MCLOCK_512;
     
     cmi8788_write_2(I2S_MULTICH_FORMAT, sDac);
     cmi8788_write_2(I2S_ADC1_FORMAT, sDac);
@@ -155,7 +155,7 @@ bool XonarSTDeluxeAudioDevice::initHardware(IOService *provider)
         IOLog("XonarSTDeluxeAudioDevice[%p]::initHardware(%p) MPU401 found\n", this, provider);
     
     // default attached to headphone
-    // cmi8788_set_output(OUTPUT_REAR_HP);
+    cmi8788_set_output(OUTPUT_REAR_HP);
     
     setDeviceName("Xonar Essence ST Deluxe");
     setDeviceShortName("Xonar ST+H6");
