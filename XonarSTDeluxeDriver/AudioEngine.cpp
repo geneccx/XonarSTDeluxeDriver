@@ -7,6 +7,7 @@
 //
 
 #include "AudioEngine.h"
+#include "XonarIO.h"
 
 #include <IOKit/IOLib.h>
 
@@ -291,30 +292,24 @@ IOReturn XonarSTDeluxeAudioEngine::performAudioEngineStart()
     
     // Add audio - I/O start code here
 
-    ((XonarSTDeluxeAudioDevice*)audioDevice)->cmi8788_write_4(MULTICH_ADDR, physicalAddressOutput);
-    ((XonarSTDeluxeAudioDevice*)audioDevice)->cmi8788_write_4(MULTICH_SIZE, BUFFER_SIZE / 4 - 1);
+    cmi8788_write_4(deviceInfo, MULTICH_ADDR, physicalAddressOutput);
+    cmi8788_write_4(deviceInfo, MULTICH_SIZE, BUFFER_SIZE / 4 - 1);
     /* what is this 1024 you ask
      * i have no idea
      * oss uses dmap->fragment_size
      * alsa uses params_period_bytes()
      */
-    ((XonarSTDeluxeAudioDevice*)audioDevice)->cmi8788_write_4(MULTICH_FRAG, 65536 / 4 - 1);
+    cmi8788_write_4(deviceInfo, MULTICH_FRAG, 65536 / 4 - 1);
     
-    ((XonarSTDeluxeAudioDevice*)audioDevice)->cmi8788_write_1(MULTICH_MODE,
-                    (((XonarSTDeluxeAudioDevice*)audioDevice)->cmi8788_read_1(MULTICH_MODE) &
-                     ~MULTICH_MODE_CH_MASK) | MULTICH_MODE_2CH);
+    cmi8788_write_1(deviceInfo, MULTICH_MODE, (cmi8788_read_1(deviceInfo, MULTICH_MODE) & ~MULTICH_MODE_CH_MASK) | MULTICH_MODE_2CH);
     
     /* setup i2s bits in the i2s register */
-    ((XonarSTDeluxeAudioDevice*)audioDevice)->cmi8788_write_1(I2S_MULTICH_FORMAT,
-                    (((XonarSTDeluxeAudioDevice*)audioDevice)->cmi8788_read_1(I2S_MULTICH_FORMAT) &
-                     ~I2S_BITS_MASK) | I2S_FMT_BITS16);
+    cmi8788_write_1(deviceInfo, I2S_MULTICH_FORMAT, (cmi8788_read_1(deviceInfo, I2S_MULTICH_FORMAT) & ~I2S_BITS_MASK) | I2S_FMT_BITS16);
     
     /* enable irq */
-    ((XonarSTDeluxeAudioDevice*)audioDevice)->cmi8788_write_2(IRQ_MASK,
-                    ((XonarSTDeluxeAudioDevice*)audioDevice)->cmi8788_read_2(IRQ_MASK) | CHANNEL_MULTICH);
+    cmi8788_write_2(deviceInfo, IRQ_MASK, cmi8788_read_2(deviceInfo, IRQ_MASK) | CHANNEL_MULTICH);
     /* enable dma */
-    ((XonarSTDeluxeAudioDevice*)audioDevice)->cmi8788_write_2(DMA_START,
-                    ((XonarSTDeluxeAudioDevice*)audioDevice)->cmi8788_read_2(DMA_START) | CHANNEL_MULTICH);
+    cmi8788_write_2(deviceInfo, DMA_START, cmi8788_read_2(deviceInfo, DMA_START) | CHANNEL_MULTICH);
     
     return kIOReturnSuccess;
 }
@@ -328,11 +323,9 @@ IOReturn XonarSTDeluxeAudioEngine::performAudioEngineStop()
     interruptEventSource->disable();
     
     /* disable irq */
-    ((XonarSTDeluxeAudioDevice*)audioDevice)->cmi8788_write_2(IRQ_MASK,
-                                                              ((XonarSTDeluxeAudioDevice*)audioDevice)->cmi8788_read_2(IRQ_MASK) & ~CHANNEL_MULTICH);
+    cmi8788_write_2(deviceInfo, IRQ_MASK, cmi8788_read_2(deviceInfo, IRQ_MASK) & ~CHANNEL_MULTICH);
     /* disable dma */
-    ((XonarSTDeluxeAudioDevice*)audioDevice)->cmi8788_write_2(DMA_START,
-                                                              ((XonarSTDeluxeAudioDevice*)audioDevice)->cmi8788_read_2(DMA_START) & ~CHANNEL_MULTICH);
+    cmi8788_write_2(deviceInfo, DMA_START, cmi8788_read_2(deviceInfo, DMA_START) & ~CHANNEL_MULTICH);
     return kIOReturnSuccess;
 }
 
@@ -347,33 +340,30 @@ UInt32 XonarSTDeluxeAudioEngine::getCurrentSampleFrame()
     // frame returned by this function.  If it is too large a value, sound data that hasn't been played will be
     // erased.
     
-    UInt32 ptr = ((XonarSTDeluxeAudioDevice*)audioDevice)->cmi8788_read_4(MULTICH_ADDR);
+    UInt32 ptr = cmi8788_read_4(deviceInfo, MULTICH_ADDR);
     ptr -= physicalAddressOutput;
     //ptr %=
     
+    // voodoo magic? 2 channels x 4
     return ptr / (2 * 4);
 }
 
 IOReturn XonarSTDeluxeAudioEngine::performFormatChange(IOAudioStream *audioStream, const IOAudioStreamFormat *newFormat, const IOAudioSampleRate *newSampleRate)
 {
+    int fBits = 0;
+    
     IOLog("XonarSTDeluxeAudioEngine[%p]::peformFormatChange(%p, %p, %p)\n", this, audioStream, newFormat, newSampleRate);
     
     if (newSampleRate) {
         switch (newSampleRate->whole) {
             case 44100:
                 IOLog("/t-> 44.1kHz selected\n");
-                
-                ((XonarSTDeluxeAudioDevice*)audioDevice)->cmi8788_write_1(I2S_MULTICH_FORMAT,
-                                (((XonarSTDeluxeAudioDevice*)audioDevice)->cmi8788_read_1(I2S_MULTICH_FORMAT) &
-                                 ~I2S_FMT_RATE_MASK) | I2S_FMT_RATE44);
+                cmi8788_write_1(deviceInfo, I2S_MULTICH_FORMAT, (cmi8788_read_1(deviceInfo, I2S_MULTICH_FORMAT) & ~I2S_FMT_RATE_MASK) | I2S_FMT_RATE44);
 
                 break;
             case 48000:
                 IOLog("/t-> 48kHz selected\n");
-                
-                ((XonarSTDeluxeAudioDevice*)audioDevice)->cmi8788_write_1(I2S_MULTICH_FORMAT,
-                                (((XonarSTDeluxeAudioDevice*)audioDevice)->cmi8788_read_1(I2S_MULTICH_FORMAT) &
-                                 ~I2S_FMT_RATE_MASK) | I2S_FMT_RATE48);
+                cmi8788_write_1(deviceInfo, I2S_MULTICH_FORMAT, (cmi8788_read_1(deviceInfo, I2S_MULTICH_FORMAT) & ~I2S_FMT_RATE_MASK) | I2S_FMT_RATE48);
                 
                 break;
             default:
@@ -386,12 +376,11 @@ IOReturn XonarSTDeluxeAudioEngine::performFormatChange(IOAudioStream *audioStrea
     if(newFormat) {
         switch(newFormat->fBitDepth) {
             case 16:
-                ((XonarSTDeluxeAudioDevice*)audioDevice)->cmi8788_write_1(PLAY_FORMAT,
-                                                                          (((XonarSTDeluxeAudioDevice*)audioDevice)->cmi8788_read_1(PLAY_FORMAT) &
-                                                                           ~MULTICH_FORMAT_MASK) | 0);
+                fBits = 0;
                 break;
         }
-
+        
+        cmi8788_write_1(deviceInfo, PLAY_FORMAT, cmi8788_read_1(deviceInfo, PLAY_FORMAT) & ~MULTICH_FORMAT_MASK | fBits);
     }
     
     return kIOReturnSuccess;
@@ -428,14 +417,12 @@ void XonarSTDeluxeAudioEngine::filterInterrupt(int index)
     // in to takeTimeStamp()
     unsigned int intstat;
     
-    if ((intstat = ((XonarSTDeluxeAudioDevice*)audioDevice)->cmi8788_read_2(IRQ_STAT)) == 0) {
+    if ((intstat = cmi8788_read_2(deviceInfo, IRQ_STAT)) == 0) {
         return;
     } if ((intstat & CHANNEL_MULTICH)) {
         /* Acknowledge the interrupt by disabling and enabling the irq */
-        ((XonarSTDeluxeAudioDevice*)audioDevice)->cmi8788_write_2(IRQ_MASK,
-                        ((XonarSTDeluxeAudioDevice*)audioDevice)->cmi8788_read_2(IRQ_MASK) & ~CHANNEL_MULTICH);
-        ((XonarSTDeluxeAudioDevice*)audioDevice)->cmi8788_write_2(IRQ_MASK,
-                        ((XonarSTDeluxeAudioDevice*)audioDevice)->cmi8788_read_2(IRQ_MASK) | CHANNEL_MULTICH);
+        cmi8788_write_2(deviceInfo, IRQ_MASK, cmi8788_read_2(deviceInfo, IRQ_MASK) & ~CHANNEL_MULTICH);
+        cmi8788_write_2(deviceInfo, IRQ_MASK, cmi8788_read_2(deviceInfo, IRQ_MASK) | CHANNEL_MULTICH);
         
         takeTimeStamp();
     }

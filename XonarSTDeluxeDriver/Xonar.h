@@ -1,3 +1,6 @@
+#ifndef _XONAR_H
+#define _XONAR_H
+
 #define CMEDIA_VENDOR_ID	0x13F6
 #define CMEDIA_CMI8788		0x8788
 
@@ -342,3 +345,62 @@ SOUND_MASK_DEPTH | \
 SOUND_MASK_MONO | \
 SOUND_MASK_PHONE \
 )
+
+
+#define OUTPUT_LINE 0
+#define OUTPUT_REAR_HP 1
+#define OUTPUT_HP 2
+
+
+#include <IOKit/audio/IOAudioDevice.h>
+
+class IOPCIDevice;
+class IOMemoryMap;
+
+struct xonar_chinfo {
+    struct snd_dbuf		*buffer;
+    struct pcm_channel 	*channel;
+    struct xonar_info 	*parent;
+    int			dir;
+    u_int32_t		fmt, spd, phys_buf, bps;
+    int 			adc_type;
+    int 			dac_type;
+    int 			play_dma_start;
+    int 			play_irq_mask;
+    int 			play_chan_reset;
+    int 			state;
+    int 			blksz;
+};
+
+struct pcm1796_info {
+    UInt16      regs[PCM1796_NREGS];
+    int 		rolloff;
+    int 		bypass;
+    int 		deemph;
+    int 		hp;
+    int 		hp_gain;
+};
+
+struct xonar_info {
+    IOPCIDevice *pciDevice;
+    IOMemoryMap *deviceMap;
+    
+    int output;
+    struct resource *reg, *irq;
+    int regtype, regid, irqid;
+    
+    void *ih;
+    
+    uint16_t model;
+    
+    int vol[2];
+    int bufmaxsz, bufsz;
+    int pnum;
+    struct pcm1796_info pcm1796;
+    struct xonar_chinfo chan[2];
+    
+    int anti_pop_delay;
+    int output_control_gpio;
+};
+
+#endif
