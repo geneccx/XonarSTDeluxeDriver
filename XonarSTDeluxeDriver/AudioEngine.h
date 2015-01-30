@@ -11,7 +11,7 @@
 
 #include <IOKit/audio/IOAudioEngine.h>
 
-#include "XonarSTDeluxeAudioDevice.h"
+#include "AudioDevice.h"
 
 #define XonarSTDeluxeAudioEngine com_GeneC_driver_XonarSTDeluxeEngine
 

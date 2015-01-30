@@ -6,9 +6,8 @@
 //  Copyright (c) 2015 Gene Chen. All rights reserved.
 //
 
-#include "XonarSTDeluxeAudioDevice.h"
-
-#include "XonarSTDeluxeAudioEngine.h"
+#include "AudioDevice.h"
+#include "AudioEngine.h"
 
 #include "Xonar.h"
 

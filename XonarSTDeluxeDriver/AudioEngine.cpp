@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Gene Chen. All rights reserved.
 //
 
-#include "XonarSTDeluxeAudioEngine.h"
+#include "AudioEngine.h"
 
 #include <IOKit/IOLib.h>
 

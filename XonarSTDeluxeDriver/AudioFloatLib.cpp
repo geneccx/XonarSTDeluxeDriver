@@ -25,7 +25,7 @@
 
 #include <IOKit/audio/IOAudioTypes.h>
 #include <IOKit/IOLib.h>
-#include "XonarSTDeluxeAudioEngine.h"
+#include "AudioEngine.h"
 
 #define kMaxSInt16ValueInFloat           (3.2768000000000e4)
 #define kMaxFloatMinusLSBSInt32          (0.99999999953434)

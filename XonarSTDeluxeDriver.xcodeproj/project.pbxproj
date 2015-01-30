@@ -7,21 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		90DBF9911A79DB2900C79CDD /* XonarSTDeluxeAudioFloatLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90DBF9901A79DB2900C79CDD /* XonarSTDeluxeAudioFloatLib.cpp */; };
-		90E7E9C11A7855B600B4DA1C /* XonarSTDeluxeAudioDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 90E7E9C01A7855B600B4DA1C /* XonarSTDeluxeAudioDevice.h */; };
-		90E7E9C31A7855B600B4DA1C /* XonarSTDeluxeAudioDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90E7E9C21A7855B600B4DA1C /* XonarSTDeluxeAudioDevice.cpp */; };
-		90E7E9CB1A78610900B4DA1C /* XonarSTDeluxeAudioEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90E7E9C91A78610900B4DA1C /* XonarSTDeluxeAudioEngine.cpp */; };
-		90E7E9CC1A78610900B4DA1C /* XonarSTDeluxeAudioEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = 90E7E9CA1A78610900B4DA1C /* XonarSTDeluxeAudioEngine.h */; };
+		90DBF9911A79DB2900C79CDD /* AudioFloatLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90DBF9901A79DB2900C79CDD /* AudioFloatLib.cpp */; };
+		90E7E9C11A7855B600B4DA1C /* AudioDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 90E7E9C01A7855B600B4DA1C /* AudioDevice.h */; };
+		90E7E9C31A7855B600B4DA1C /* AudioDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90E7E9C21A7855B600B4DA1C /* AudioDevice.cpp */; };
+		90E7E9CB1A78610900B4DA1C /* AudioEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90E7E9C91A78610900B4DA1C /* AudioEngine.cpp */; };
+		90E7E9CC1A78610900B4DA1C /* AudioEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = 90E7E9CA1A78610900B4DA1C /* AudioEngine.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		90DBF9901A79DB2900C79CDD /* XonarSTDeluxeAudioFloatLib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XonarSTDeluxeAudioFloatLib.cpp; sourceTree = "<group>"; };
+		90DBF9901A79DB2900C79CDD /* AudioFloatLib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioFloatLib.cpp; sourceTree = "<group>"; };
 		90E7E9BB1A7855B600B4DA1C /* XonarSTDeluxeDriver.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XonarSTDeluxeDriver.kext; sourceTree = BUILT_PRODUCTS_DIR; };
 		90E7E9BF1A7855B600B4DA1C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		90E7E9C01A7855B600B4DA1C /* XonarSTDeluxeAudioDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XonarSTDeluxeAudioDevice.h; sourceTree = "<group>"; };
-		90E7E9C21A7855B600B4DA1C /* XonarSTDeluxeAudioDevice.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = XonarSTDeluxeAudioDevice.cpp; sourceTree = "<group>"; };
-		90E7E9C91A78610900B4DA1C /* XonarSTDeluxeAudioEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XonarSTDeluxeAudioEngine.cpp; sourceTree = "<group>"; };
-		90E7E9CA1A78610900B4DA1C /* XonarSTDeluxeAudioEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XonarSTDeluxeAudioEngine.h; sourceTree = "<group>"; };
+		90E7E9C01A7855B600B4DA1C /* AudioDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioDevice.h; sourceTree = "<group>"; };
+		90E7E9C21A7855B600B4DA1C /* AudioDevice.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AudioDevice.cpp; sourceTree = "<group>"; };
+		90E7E9C91A78610900B4DA1C /* AudioEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioEngine.cpp; sourceTree = "<group>"; };
+		90E7E9CA1A78610900B4DA1C /* AudioEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioEngine.h; sourceTree = "<group>"; };
 		90E8D8C61A787BC6003C20B9 /* Xonar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Xonar.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -55,11 +55,11 @@
 		90E7E9BD1A7855B600B4DA1C /* XonarSTDeluxeDriver */ = {
 			isa = PBXGroup;
 			children = (
-				90E7E9C01A7855B600B4DA1C /* XonarSTDeluxeAudioDevice.h */,
-				90E7E9C21A7855B600B4DA1C /* XonarSTDeluxeAudioDevice.cpp */,
-				90E7E9C91A78610900B4DA1C /* XonarSTDeluxeAudioEngine.cpp */,
-				90E7E9CA1A78610900B4DA1C /* XonarSTDeluxeAudioEngine.h */,
-				90DBF9901A79DB2900C79CDD /* XonarSTDeluxeAudioFloatLib.cpp */,
+				90E7E9C01A7855B600B4DA1C /* AudioDevice.h */,
+				90E7E9C21A7855B600B4DA1C /* AudioDevice.cpp */,
+				90E7E9C91A78610900B4DA1C /* AudioEngine.cpp */,
+				90E7E9CA1A78610900B4DA1C /* AudioEngine.h */,
+				90DBF9901A79DB2900C79CDD /* AudioFloatLib.cpp */,
 				90E8D8C61A787BC6003C20B9 /* Xonar.h */,
 				90E7E9BE1A7855B600B4DA1C /* Supporting Files */,
 			);
@@ -81,8 +81,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				90E7E9CC1A78610900B4DA1C /* XonarSTDeluxeAudioEngine.h in Headers */,
-				90E7E9C11A7855B600B4DA1C /* XonarSTDeluxeAudioDevice.h in Headers */,
+				90E7E9CC1A78610900B4DA1C /* AudioEngine.h in Headers */,
+				90E7E9C11A7855B600B4DA1C /* AudioDevice.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -153,9 +153,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				90E7E9C31A7855B600B4DA1C /* XonarSTDeluxeAudioDevice.cpp in Sources */,
-				90DBF9911A79DB2900C79CDD /* XonarSTDeluxeAudioFloatLib.cpp in Sources */,
-				90E7E9CB1A78610900B4DA1C /* XonarSTDeluxeAudioEngine.cpp in Sources */,
+				90E7E9C31A7855B600B4DA1C /* AudioDevice.cpp in Sources */,
+				90DBF9911A79DB2900C79CDD /* AudioFloatLib.cpp in Sources */,
+				90E7E9CB1A78610900B4DA1C /* AudioEngine.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
