@@ -14,6 +14,7 @@
 #include <IOKit/audio/IOAudioControl.h>
 #include <IOKit/audio/IOAudioLevelControl.h>
 #include <IOKit/audio/IOAudioToggleControl.h>
+#include <IOKit/audio/IOAudioSelectorControl.h>
 #include <IOKit/audio/IOAudioDefines.h>
 
 #include <IOKit/IOLib.h>
@@ -142,15 +143,12 @@ bool XonarSTDeluxeAudioDevice::initHardware(IOService *provider)
     /* Init DAC */
     pcm1796_write(&deviceInfo, XONAR_ST_FRONTDAC, 20, 0);
     pcm1796_write(&deviceInfo, XONAR_ST_FRONTDAC, 18, PCM1796_FMT_24L|PCM1796_ATLD);
-    pcm1796_set_volume(&deviceInfo, 75, 75);
+    pcm1796_set_volume(&deviceInfo, 65535 * .75, 65535 * .75);
     pcm1796_write(&deviceInfo, XONAR_ST_FRONTDAC, 19, 0);
     
     /* check if MPU401 is enabled in MISC register */
     if (cmi8788_read_1(&deviceInfo, MISC_REG) & MISC_MIDI)
         IOLog("XonarSTDeluxeAudioDevice[%p]::initHardware(%p) MPU401 found\n", this, provider);
-    
-    // default attached to headphone
-    cmi8788_set_output(&deviceInfo, OUTPUT_REAR_HP);
     
     setDeviceName("Xonar Essence ST Deluxe");
     setDeviceShortName("Xonar ST+H6");
@@ -212,9 +210,9 @@ bool XonarSTDeluxeAudioDevice::createAudioEngine()
     // and a db range from -22.5 to 0.0
     // Once each control is added to the audio engine, they should be released
     // so that when the audio engine is done with them, they get freed properly
-    control = IOAudioLevelControl::createVolumeControl(65535,	// Initial value
+    control = IOAudioLevelControl::createVolumeControl(75,	// Initial value
                                                        0,		// min value
-                                                       65535,	// max value
+                                                       100,	// max value
                                                        (-22 << 16) + (32768),	// -22.5 in IOFixed (16.16)
                                                        0,		// max 0.0 in IOFixed
                                                        kIOAudioControlChannelIDDefaultLeft,
@@ -229,9 +227,9 @@ bool XonarSTDeluxeAudioDevice::createAudioEngine()
     audioEngine->addDefaultAudioControl(control);
     control->release();
     
-    control = IOAudioLevelControl::createVolumeControl(65535,	// Initial value
+    control = IOAudioLevelControl::createVolumeControl(75,	// Initial value
                                                        0,		// min value
-                                                       65535,	// max value
+                                                       100,	// max value
                                                        (-22 << 16) + (32768),	// min -22.5 in IOFixed (16.16)
                                                        0,		// max 0.0 in IOFixed
                                                        kIOAudioControlChannelIDDefaultRight,	// Affects right channel
@@ -261,11 +259,11 @@ bool XonarSTDeluxeAudioDevice::createAudioEngine()
     audioEngine->addDefaultAudioControl(control);
     control->release();
     
-    // Create a left & right input gain control with an int range from 0 to 65535
+    // Create a left & right input gain control with an int range from 0 to 255
     // and a db range from 0 to 22.5
-    control = IOAudioLevelControl::createVolumeControl(65535,	// Initial value
+    control = IOAudioLevelControl::createVolumeControl(255,	// Initial value
                                                        0,		// min value
-                                                       65535,	// max value
+                                                       255,	// max value
                                                        0,		// min 0.0 in IOFixed
                                                        (22 << 16) + (32768),	// 22.5 in IOFixed (16.16)
                                                        kIOAudioControlChannelIDDefaultLeft,
@@ -280,9 +278,26 @@ bool XonarSTDeluxeAudioDevice::createAudioEngine()
     audioEngine->addDefaultAudioControl(control);
     control->release();
     
-    control = IOAudioLevelControl::createVolumeControl(65535,	// Initial value
+    
+    control = IOAudioSelectorControl::createOutputSelector(OUTPUT_LINE + 1,
+                                                           kIOAudioControlChannelIDAll,
+                                                           kIOAudioControlChannelNameAll,
+                                                           0);
+    
+    if(!control) {
+        goto Done;
+    }
+    
+    ((IOAudioSelectorControl*)control)->addAvailableSelection(OUTPUT_LINE + 1, "Xonar Speakers");
+    ((IOAudioSelectorControl*)control)->addAvailableSelection(OUTPUT_REAR_HP + 1, "Xonar Rear HP");
+    
+    control->setValueChangeHandler((IOAudioControl::IntValueChangeHandler)outputSelectChangeHandler, this);
+    audioEngine->addDefaultAudioControl(control);
+    
+    
+    control = IOAudioLevelControl::createVolumeControl(255,	// Initial value
                                                        0,		// min value
-                                                       65535,	// max value
+                                                       255,	// max value
                                                        0,		// min 0.0 in IOFixed
                                                        (22 << 16) + (32768),	// max 22.5 in IOFixed (16.16)
                                                        kIOAudioControlChannelIDDefaultRight,	// Affects right channel
@@ -351,7 +366,16 @@ IOReturn XonarSTDeluxeAudioDevice::volumeChanged(IOAudioControl *volumeControl, 
         IOLog("\t-> Channel %u\n", (unsigned int)(volumeControl->getChannelID()));
     }
     
-    // Add hardware volume code change
+    switch(volumeControl->getChannelID()) {
+        case 1:
+            // left channel
+            pcm1796_set_left_volume(&deviceInfo, newValue);
+            break;
+        case 2:
+            // right channel
+            pcm1796_set_right_volume(&deviceInfo, newValue);
+            break;
+    }
     
     return kIOReturnSuccess;
 }
@@ -373,7 +397,29 @@ IOReturn XonarSTDeluxeAudioDevice::outputMuteChanged(IOAudioControl *muteControl
 {
     IOLog("XonarSTDeluxeAudioDevice[%p]::outputMuteChanged(%p, %d, %d)\n", this, muteControl, (int)oldValue, (int)newValue);
     
-    cmi8788_toggle_sound(&deviceInfo, !newValue);
+    pcm1796_set_mute(&deviceInfo, newValue);
+    
+    return kIOReturnSuccess;
+}
+
+IOReturn XonarSTDeluxeAudioDevice::outputSelectChangeHandler(IOService *target, IOAudioControl *outputSelectControl, SInt32 oldValue, SInt32 newValue)
+{
+    IOReturn result = kIOReturnBadArgument;
+    XonarSTDeluxeAudioDevice *audioDevice;
+    
+    audioDevice = (XonarSTDeluxeAudioDevice *)target;
+    if (audioDevice) {
+        result = audioDevice->outputSelectChanged(outputSelectControl, oldValue, newValue);
+    }
+    
+    return result;
+}
+
+IOReturn XonarSTDeluxeAudioDevice::outputSelectChanged(IOAudioControl *outputSelectControl, SInt32 oldValue, SInt32 newValue)
+{
+    IOLog("XonarSTDeluxeAudioDevice[%p]::outputSelectChanged(%p, %d, %d)\n", this, outputSelectControl, (int)oldValue, (int)newValue);
+    
+    cmi8788_set_output(&deviceInfo, newValue - 1);
     
     return kIOReturnSuccess;
 }

@@ -9,7 +9,8 @@
 #ifndef __XonarSTDeluxeDriver__XonarIO__
 #define __XonarSTDeluxeDriver__XonarIO__
 
-extern unsigned int pcm1796_vol_scale(xonar_info* dev, int vol);
+extern void pcm1796_set_left_volume(xonar_info* dev, int left);
+extern void pcm1796_set_right_volume(xonar_info* dev, int right);
 extern void pcm1796_set_volume(xonar_info* dev, int left, int right);
 extern void pcm1796_set_mute(xonar_info* dev, int mute);
 

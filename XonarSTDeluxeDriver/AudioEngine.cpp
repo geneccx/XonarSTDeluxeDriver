@@ -268,7 +268,7 @@ void XonarSTDeluxeAudioEngine::stop(IOService *provider)
     
     // Add code to shut down hardware (beyond what is needed to simply stop the audio engine)
     // There may be nothing needed here
-    
+        
     super::stop(provider);
 }
 
@@ -350,7 +350,8 @@ UInt32 XonarSTDeluxeAudioEngine::getCurrentSampleFrame()
 
 IOReturn XonarSTDeluxeAudioEngine::performFormatChange(IOAudioStream *audioStream, const IOAudioStreamFormat *newFormat, const IOAudioSampleRate *newSampleRate)
 {
-    int fBits = 0;
+    int fBits = I2S_FMT_BITS16;
+    int fSampleRate = I2S_FMT_RATE44;
     
     IOLog("XonarSTDeluxeAudioEngine[%p]::peformFormatChange(%p, %p, %p)\n", this, audioStream, newFormat, newSampleRate);
     
@@ -358,29 +359,50 @@ IOReturn XonarSTDeluxeAudioEngine::performFormatChange(IOAudioStream *audioStrea
         switch (newSampleRate->whole) {
             case 44100:
                 IOLog("/t-> 44.1kHz selected\n");
-                cmi8788_write_1(deviceInfo, I2S_MULTICH_FORMAT, (cmi8788_read_1(deviceInfo, I2S_MULTICH_FORMAT) & ~I2S_FMT_RATE_MASK) | I2S_FMT_RATE44);
-
+                fSampleRate = I2S_FMT_RATE44;
                 break;
+                
             case 48000:
                 IOLog("/t-> 48kHz selected\n");
-                cmi8788_write_1(deviceInfo, I2S_MULTICH_FORMAT, (cmi8788_read_1(deviceInfo, I2S_MULTICH_FORMAT) & ~I2S_FMT_RATE_MASK) | I2S_FMT_RATE48);
-                
+                fSampleRate = I2S_FMT_RATE48;
                 break;
+                
+            case 96000:
+                IOLog("/t-> 96kHz selected\n");
+                fSampleRate = I2S_FMT_RATE96;
+                break;
+                
+            case 192000:
+                IOLog("/t-> 192kHz selected\n");
+                fSampleRate = I2S_FMT_RATE192;
+                break;
+                
             default:
-                // This should not be possible since we only specified 44100 and 48000 as valid sample rates
                 IOLog("/t Internal Error - unknown sample rate selected.\n");
                 break;
         }
+        
+        cmi8788_write_1(deviceInfo, I2S_MULTICH_FORMAT, (cmi8788_read_1(deviceInfo, I2S_MULTICH_FORMAT) & ~I2S_FMT_RATE_MASK) | fSampleRate);
     }
     
     if(newFormat) {
         switch(newFormat->fBitDepth) {
             case 16:
-                fBits = 0;
+                fBits = I2S_FMT_BITS16;
+                break;
+            case 24:
+                fBits = I2S_FMT_BITS24;
+                break;
+            case 32:
+                fBits = I2S_FMT_BITS32;
+                break;
+                
+            default:
+                IOLog("/t Internal Error - unknown sample format selected.\n");
                 break;
         }
         
-        cmi8788_write_1(deviceInfo, PLAY_FORMAT, cmi8788_read_1(deviceInfo, PLAY_FORMAT) & ~MULTICH_FORMAT_MASK | fBits);
+        cmi8788_write_1(deviceInfo, PLAY_FORMAT, (cmi8788_read_1(deviceInfo, PLAY_FORMAT) & ~MULTICH_FORMAT_MASK) | fBits);
     }
     
     return kIOReturnSuccess;

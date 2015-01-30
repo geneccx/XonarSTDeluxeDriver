@@ -28,6 +28,9 @@ class XonarSTDeluxeAudioDevice : public IOAudioDevice
     virtual bool initHardware(IOService *provider);
     virtual bool createAudioEngine();
     virtual void free();
+  
+    static IOReturn outputSelectChangeHandler(IOService *target, IOAudioControl *outputSelectControl, SInt32 oldValue, SInt32 newValue);
+    virtual IOReturn outputSelectChanged(IOAudioControl *outputSelectControl, SInt32 oldValue, SInt32 newValue);
     
     static IOReturn volumeChangeHandler(IOService *target, IOAudioControl *volumeControl, SInt32 oldValue, SInt32 newValue);
     virtual IOReturn volumeChanged(IOAudioControl *volumeControl, SInt32 oldValue, SInt32 newValue);

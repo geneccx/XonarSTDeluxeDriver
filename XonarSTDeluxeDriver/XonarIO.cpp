@@ -93,10 +93,20 @@ unsigned int pcm1796_vol_scale(int vol)
     return (vol * 241)/100;
 }
 
-void pcm1796_set_volume(xonar_info* dev, int left, int right)
+void pcm1796_set_left_volume(xonar_info* dev, int left)
 {
     pcm1796_write(dev, XONAR_STX_FRONTDAC, 16, pcm1796_vol_scale(left));
+}
+
+void pcm1796_set_right_volume(xonar_info* dev, int right)
+{
     pcm1796_write(dev, XONAR_STX_FRONTDAC, 17, pcm1796_vol_scale(right));
+}
+
+void pcm1796_set_volume(xonar_info* dev, int left, int right)
+{
+    pcm1796_set_left_volume(dev, left);
+    pcm1796_set_right_volume(dev, left);
 }
 
 void cmi8788_toggle_sound(xonar_info* dev, int output) {
