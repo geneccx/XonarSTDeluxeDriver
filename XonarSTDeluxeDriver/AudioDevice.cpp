@@ -143,7 +143,7 @@ bool XonarSTDeluxeAudioDevice::initHardware(IOService *provider)
     /* Init DAC */
     pcm1796_write(&deviceInfo, XONAR_ST_FRONTDAC, 20, 0);
     pcm1796_write(&deviceInfo, XONAR_ST_FRONTDAC, 18, PCM1796_FMT_24L|PCM1796_ATLD);
-    pcm1796_set_volume(&deviceInfo, 65535 * .75, 65535 * .75);
+    pcm1796_set_volume(&deviceInfo, 75, 75);
     pcm1796_write(&deviceInfo, XONAR_ST_FRONTDAC, 19, 0);
     
     /* check if MPU401 is enabled in MISC register */
