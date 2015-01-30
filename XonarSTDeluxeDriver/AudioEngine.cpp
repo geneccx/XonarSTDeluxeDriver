@@ -6,7 +6,8 @@
 //  Copyright (c) 2015 Gene Chen. All rights reserved.
 //
 
-#include "XonarSTDeluxeAudioEngine.h"
+#include "AudioEngine.h"
+#include "XonarIO.h"
 
 #include <IOKit/IOLib.h>
 
@@ -23,13 +24,13 @@
 
 OSDefineMetaClassAndStructors(XonarSTDeluxeAudioEngine, IOAudioEngine)
 
-bool XonarSTDeluxeAudioEngine::init(XonarSTDeluxeAudioDeviceRegisters *regs)
+bool XonarSTDeluxeAudioEngine::init(xonar_info *deviceInfo)
 {
     bool result = false;
     
-    IOLog("XonarSTDeluxeAudioEngine[%p]::init(%p)\n", this, regs);
+    IOLog("XonarSTDeluxeAudioEngine[%p]::init(%p)\n", this, deviceInfo);
     
-    if (!regs) {
+    if (!deviceInfo) {
         goto Done;
     }
     
@@ -37,7 +38,7 @@ bool XonarSTDeluxeAudioEngine::init(XonarSTDeluxeAudioDeviceRegisters *regs)
         goto Done;
     }
     
-    deviceRegisters = regs;
+    this->deviceInfo = deviceInfo;
     
     result = true;
     
@@ -52,6 +53,7 @@ bool XonarSTDeluxeAudioEngine::initHardware(IOService *provider)
     IOAudioSampleRate initialSampleRate;
     IOAudioStream *audioStream;
     IOWorkLoop *workLoop;
+    IOByteCount length;
     
     IOLog("XonarSTDeluxeAudioEngine[%p]::initHardware(%p)\n", this, provider);
     
@@ -101,18 +103,25 @@ bool XonarSTDeluxeAudioEngine::initHardware(IOService *provider)
     
     // Allocate our input and output buffers - a real driver will likely need to allocate its buffers
     // differently
-    outputBuffer = (SInt16 *)IOMalloc(BUFFER_SIZE);
-    if (!outputBuffer) {
+    
+    outputBuffer = IOBufferMemoryDescriptor::withOptions(kIOMemoryPhysicallyContiguous, DEFAULT_BUFFER_BYTES_MULTICH, PAGE_SIZE);
+    if (!outputBuffer || outputBuffer->prepare() != kIOReturnSuccess) {
         goto Done;
     }
     
-    inputBuffer = (SInt16 *)IOMalloc(BUFFER_SIZE);
-    if (!inputBuffer) {
+    inputBuffer = IOBufferMemoryDescriptor::withOptions(kIOMemoryPhysicallyContiguous, DEFAULT_BUFFER_BYTES_MULTICH, PAGE_SIZE);
+    if (!inputBuffer || inputBuffer->prepare() != kIOReturnSuccess) {
         goto Done;
     }
+    
+    bzero(outputBuffer->getBytesNoCopy(), outputBuffer->getCapacity());
+    bzero(inputBuffer->getBytesNoCopy(), inputBuffer->getCapacity());
+    
+    physicalAddressOutput = outputBuffer->getPhysicalSegment(0, &length);
+    physicalAddressInput = inputBuffer->getPhysicalSegment(0, &length);
     
     // Create an IOAudioStream for each buffer and add it to this audio engine
-    audioStream = createNewAudioStream(kIOAudioStreamDirectionOutput, outputBuffer, BUFFER_SIZE);
+    audioStream = createNewAudioStream(kIOAudioStreamDirectionOutput, outputBuffer);
     if (!audioStream) {
         goto Done;
     }
@@ -120,7 +129,7 @@ bool XonarSTDeluxeAudioEngine::initHardware(IOService *provider)
     addAudioStream(audioStream);
     audioStream->release();
     
-    audioStream = createNewAudioStream(kIOAudioStreamDirectionInput, inputBuffer, BUFFER_SIZE);
+    audioStream = createNewAudioStream(kIOAudioStreamDirectionInput, inputBuffer);
     if (!audioStream) {
         goto Done;
     }
@@ -147,19 +156,21 @@ void XonarSTDeluxeAudioEngine::free()
     }
     
     if (outputBuffer) {
-        IOFree(outputBuffer, BUFFER_SIZE);
+        outputBuffer->complete();
+        outputBuffer->release();
         outputBuffer = NULL;
     }
     
     if (inputBuffer) {
-        IOFree(inputBuffer, BUFFER_SIZE);
+        inputBuffer->complete();
+        inputBuffer->release();
         inputBuffer = NULL;
     }
     
     super::free();
 }
 
-IOAudioStream *XonarSTDeluxeAudioEngine::createNewAudioStream(IOAudioStreamDirection direction, void *sampleBuffer, UInt32 sampleBufferSize)
+IOAudioStream *XonarSTDeluxeAudioEngine::createNewAudioStream(IOAudioStreamDirection direction, IOBufferMemoryDescriptor *sampleBuffer)
 {
     IOAudioStream *audioStream;
     
@@ -168,32 +179,67 @@ IOAudioStream *XonarSTDeluxeAudioEngine::createNewAudioStream(IOAudioStreamDirec
         if (!audioStream->initWithAudioEngine(this, direction, 1)) {
             audioStream->release();
         } else {
-            IOAudioSampleRate rate;
-            IOAudioStreamFormat format = {
-                2,												// num channels
-                kIOAudioStreamSampleFormatLinearPCM,			// sample format
-                kIOAudioStreamNumericRepresentationSignedInt,	// numeric format
-                BIT_DEPTH,										// bit depth
-                BIT_DEPTH,										// bit width
-                kIOAudioStreamAlignmentHighByte,				// high byte aligned - unused because bit depth == bit width
-                kIOAudioStreamByteOrderBigEndian,				// big endian
-                true,											// format is mixable
-                0												// driver-defined tag - unused by this driver
-            };
-            
-            // As part of creating a new IOAudioStream, its sample buffer needs to be set
-            // It will automatically create a mix buffer should it be needed
-            audioStream->setSampleBuffer(sampleBuffer, sampleBufferSize);
-            
-            // This device only allows a single format and a choice of 2 different sample rates
-            rate.fraction = 0;
-            rate.whole = 44100;
-            audioStream->addAvailableFormat(&format, &rate, &rate);
-            rate.whole = 48000;
-            audioStream->addAvailableFormat(&format, &rate, &rate);
-            
-            // Finally, the IOAudioStream's current format needs to be indicated
-            audioStream->setFormat(&format);
+            if(direction == kIOAudioStreamDirectionOutput){
+                IOAudioSampleRate rate;
+                IOAudioStreamFormat format = {
+                    2,												// num channels
+                    kIOAudioStreamSampleFormatLinearPCM,			// sample format
+                    kIOAudioStreamNumericRepresentationSignedInt,	// numeric format
+                    BIT_DEPTH,										// bit depth
+                    BIT_DEPTH,										// bit width
+                    kIOAudioStreamAlignmentLowByte,				    // low byte aligned - unused because bit depth == bit width
+                    kIOAudioStreamByteOrderLittleEndian,			// little endian
+                    true,											// format is mixable
+                    0												// driver-defined tag - unused by this driver
+                };
+                
+                // As part of creating a new IOAudioStream, its sample buffer needs to be set
+                // It will automatically create a mix buffer should it be needed
+                audioStream->setSampleBuffer(sampleBuffer->getBytesNoCopy(), sampleBuffer->getCapacity());
+                
+                rate.fraction = 0;
+                rate.whole = 44100;
+                audioStream->addAvailableFormat(&format, &rate, &rate);
+                rate.whole = 48000;
+                audioStream->addAvailableFormat(&format, &rate, &rate);
+                rate.whole = 96000;
+                audioStream->addAvailableFormat(&format, &rate, &rate);
+                rate.whole = 192000;
+                audioStream->addAvailableFormat(&format, &rate, &rate);
+                
+                // Finally, the IOAudioStream's current format needs to be indicated
+                audioStream->setFormat(&format);
+            } else {
+                IOAudioSampleRate rate;
+                IOAudioStreamFormat format = {
+                    2,												// num channels
+                    kIOAudioStreamSampleFormatLinearPCM,			// sample format
+                    kIOAudioStreamNumericRepresentationSignedInt,	// numeric format
+                    BIT_DEPTH,										// bit depth
+                    BIT_DEPTH,										// bit width
+                    kIOAudioStreamAlignmentLowByte,				    // low byte aligned - unused because bit depth == bit width
+                    kIOAudioStreamByteOrderLittleEndian,			// little endian
+                    true,											// format is mixable
+                    0												// driver-defined tag - unused by this driver
+                };
+                
+                // As part of creating a new IOAudioStream, its sample buffer needs to be set
+                // It will automatically create a mix buffer should it be needed
+                audioStream->setSampleBuffer(sampleBuffer->getBytesNoCopy(), sampleBuffer->getCapacity());
+                
+                rate.fraction = 0;
+                rate.whole = 44100;
+                audioStream->addAvailableFormat(&format, &rate, &rate);
+                rate.whole = 48000;
+                audioStream->addAvailableFormat(&format, &rate, &rate);
+                rate.whole = 96000;
+                audioStream->addAvailableFormat(&format, &rate, &rate);
+                rate.whole = 192000;
+                audioStream->addAvailableFormat(&format, &rate, &rate);
+                
+                // Finally, the IOAudioStream's current format needs to be indicated
+                audioStream->setFormat(&format);
+            }
         }
     }
     
@@ -222,7 +268,7 @@ void XonarSTDeluxeAudioEngine::stop(IOService *provider)
     
     // Add code to shut down hardware (beyond what is needed to simply stop the audio engine)
     // There may be nothing needed here
-    
+        
     super::stop(provider);
 }
 
@@ -243,9 +289,27 @@ IOReturn XonarSTDeluxeAudioEngine::performAudioEngineStart()
     // to be incremented.  To accomplish that, false is passed to takeTimeStamp().
     takeTimeStamp(false);
     
-    // Add audio - I/O start code here
     
-//#error performAudioEngineStart() - driver will not work until audio engine start code is added
+    // Add audio - I/O start code here
+
+    cmi8788_write_4(deviceInfo, MULTICH_ADDR, physicalAddressOutput);
+    cmi8788_write_4(deviceInfo, MULTICH_SIZE, BUFFER_SIZE / 4 - 1);
+    /* what is this 1024 you ask
+     * i have no idea
+     * oss uses dmap->fragment_size
+     * alsa uses params_period_bytes()
+     */
+    cmi8788_write_4(deviceInfo, MULTICH_FRAG, 65536 / 4 - 1);
+    
+    cmi8788_write_1(deviceInfo, MULTICH_MODE, (cmi8788_read_1(deviceInfo, MULTICH_MODE) & ~MULTICH_MODE_CH_MASK) | MULTICH_MODE_2CH);
+    
+    /* setup i2s bits in the i2s register */
+    cmi8788_write_1(deviceInfo, I2S_MULTICH_FORMAT, (cmi8788_read_1(deviceInfo, I2S_MULTICH_FORMAT) & ~I2S_BITS_MASK) | I2S_FMT_BITS16);
+    
+    /* enable irq */
+    cmi8788_write_2(deviceInfo, IRQ_MASK, cmi8788_read_2(deviceInfo, IRQ_MASK) | CHANNEL_MULTICH);
+    /* enable dma */
+    cmi8788_write_2(deviceInfo, DMA_START, cmi8788_read_2(deviceInfo, DMA_START) | CHANNEL_MULTICH);
     
     return kIOReturnSuccess;
 }
@@ -258,16 +322,16 @@ IOReturn XonarSTDeluxeAudioEngine::performAudioEngineStop()
     assert(interruptEventSource);
     interruptEventSource->disable();
     
-    // Add audio - I/O stop code here
-    
-//#error performAudioEngineStop() - driver will not work until audio engine stop code is added
-    
+    /* disable irq */
+    cmi8788_write_2(deviceInfo, IRQ_MASK, cmi8788_read_2(deviceInfo, IRQ_MASK) & ~CHANNEL_MULTICH);
+    /* disable dma */
+    cmi8788_write_2(deviceInfo, DMA_START, cmi8788_read_2(deviceInfo, DMA_START) & ~CHANNEL_MULTICH);
     return kIOReturnSuccess;
 }
 
 UInt32 XonarSTDeluxeAudioEngine::getCurrentSampleFrame()
 {
-    IOLog("XonarSTDeluxeAudioEngine[%p]::getCurrentSampleFrame()\n", this);
+    //IOLog("XonarSTDeluxeAudioEngine[%p]::getCurrentSampleFrame()\n", this);
     
     // In order for the erase process to run properly, this function must return the current location of
     // the audio engine - basically a sample counter
@@ -276,36 +340,69 @@ UInt32 XonarSTDeluxeAudioEngine::getCurrentSampleFrame()
     // frame returned by this function.  If it is too large a value, sound data that hasn't been played will be
     // erased.
     
-//#error getCurrentSampleFrame() - driver will not work until correct sample frame is returned
+    UInt32 ptr = cmi8788_read_4(deviceInfo, MULTICH_ADDR);
+    ptr -= physicalAddressOutput;
+    //ptr %=
     
-    // Change to return the real value
-    return 0;
+    // voodoo magic? 2 channels x 4
+    return ptr / (2 * 4);
 }
 
 IOReturn XonarSTDeluxeAudioEngine::performFormatChange(IOAudioStream *audioStream, const IOAudioStreamFormat *newFormat, const IOAudioSampleRate *newSampleRate)
 {
+    int fBits = I2S_FMT_BITS16;
+    int fSampleRate = I2S_FMT_RATE44;
+    
     IOLog("XonarSTDeluxeAudioEngine[%p]::peformFormatChange(%p, %p, %p)\n", this, audioStream, newFormat, newSampleRate);
     
-    // Since we only allow one format, we only need to be concerned with sample rate changes
-    // In this case, we only allow 2 sample rates - 44100 & 48000, so those are the only ones
-    // that we check for
     if (newSampleRate) {
         switch (newSampleRate->whole) {
             case 44100:
                 IOLog("/t-> 44.1kHz selected\n");
-                
-                // Add code to switch hardware to 44.1khz
+                fSampleRate = I2S_FMT_RATE44;
                 break;
+                
             case 48000:
                 IOLog("/t-> 48kHz selected\n");
-                
-                // Add code to switch hardware to 48kHz
+                fSampleRate = I2S_FMT_RATE48;
                 break;
+                
+            case 96000:
+                IOLog("/t-> 96kHz selected\n");
+                fSampleRate = I2S_FMT_RATE96;
+                break;
+                
+            case 192000:
+                IOLog("/t-> 192kHz selected\n");
+                fSampleRate = I2S_FMT_RATE192;
+                break;
+                
             default:
-                // This should not be possible since we only specified 44100 and 48000 as valid sample rates
                 IOLog("/t Internal Error - unknown sample rate selected.\n");
                 break;
         }
+        
+        cmi8788_write_1(deviceInfo, I2S_MULTICH_FORMAT, (cmi8788_read_1(deviceInfo, I2S_MULTICH_FORMAT) & ~I2S_FMT_RATE_MASK) | fSampleRate);
+    }
+    
+    if(newFormat) {
+        switch(newFormat->fBitDepth) {
+            case 16:
+                fBits = I2S_FMT_BITS16;
+                break;
+            case 24:
+                fBits = I2S_FMT_BITS24;
+                break;
+            case 32:
+                fBits = I2S_FMT_BITS32;
+                break;
+                
+            default:
+                IOLog("/t Internal Error - unknown sample format selected.\n");
+                break;
+        }
+        
+        cmi8788_write_1(deviceInfo, PLAY_FORMAT, (cmi8788_read_1(deviceInfo, PLAY_FORMAT) & ~MULTICH_FORMAT_MASK) | fBits);
     }
     
     return kIOReturnSuccess;
@@ -340,5 +437,16 @@ void XonarSTDeluxeAudioEngine::filterInterrupt(int index)
     // the loop count.  The function takeTimeStamp() does both of those for us.  Additionally,
     // if a different timestamp is to be used (other than the current time), it can be passed
     // in to takeTimeStamp()
-    takeTimeStamp();
+    unsigned int intstat;
+    
+    if ((intstat = cmi8788_read_2(deviceInfo, IRQ_STAT)) == 0) {
+        return;
+    } if ((intstat & CHANNEL_MULTICH)) {
+        /* Acknowledge the interrupt by disabling and enabling the irq */
+        cmi8788_write_2(deviceInfo, IRQ_MASK, cmi8788_read_2(deviceInfo, IRQ_MASK) & ~CHANNEL_MULTICH);
+        cmi8788_write_2(deviceInfo, IRQ_MASK, cmi8788_read_2(deviceInfo, IRQ_MASK) | CHANNEL_MULTICH);
+        
+        takeTimeStamp();
+    }
+
 }

@@ -10,16 +10,8 @@
 #define _XONARSTDELUXEAUDIODEVICE_H
 
 #include <IOKit/audio/IOAudioDevice.h>
-
-typedef struct XonarSTDeluxeAudioDeviceRegisters {
-    UInt32	reg1;
-    UInt32	reg2;
-    UInt32	reg3;
-    UInt32	reg4;
-} XonarSTDeluxeAudioDeviceRegisters;
-
-class IOPCIDevice;
-class IOMemoryMap;
+#include "Xonar.h"
+#include "XonarIO.h"
 
 #define XonarSTDeluxeAudioDevice com_GeneC_driver_XonarSTDeluxeDevice
 
@@ -29,14 +21,16 @@ class XonarSTDeluxeAudioDevice : public IOAudioDevice
     
     OSDeclareDefaultStructors(XonarSTDeluxeAudioDevice)
     
-    IOPCIDevice					*pciDevice;
-    IOMemoryMap					*deviceMap;
+
     
-    XonarSTDeluxeAudioDeviceRegisters	*deviceRegisters;
+    struct xonar_info           deviceInfo;
     
     virtual bool initHardware(IOService *provider);
     virtual bool createAudioEngine();
     virtual void free();
+  
+    static IOReturn outputSelectChangeHandler(IOService *target, IOAudioControl *outputSelectControl, SInt32 oldValue, SInt32 newValue);
+    virtual IOReturn outputSelectChanged(IOAudioControl *outputSelectControl, SInt32 oldValue, SInt32 newValue);
     
     static IOReturn volumeChangeHandler(IOService *target, IOAudioControl *volumeControl, SInt32 oldValue, SInt32 newValue);
     virtual IOReturn volumeChanged(IOAudioControl *volumeControl, SInt32 oldValue, SInt32 newValue);
