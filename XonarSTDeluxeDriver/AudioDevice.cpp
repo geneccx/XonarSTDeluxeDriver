@@ -77,7 +77,7 @@ bool XonarSTDeluxeAudioDevice::initHardware(IOService *provider)
     cmi8788_write_1(&deviceInfo, FUNCTION, bVal);
     
     /* set up DAC related settings */
-    sDac = I2S_MASTER | I2S_FMT_RATE44 | I2S_FMT_LJUST | I2S_FMT_BITS16 | XONAR_MCLOCK_512;
+    sDac = I2S_MASTER | I2S_FMT_RATE44 | I2S_FMT_LJUST | I2S_FMT_BITS16 | XONAR_MCLOCK_256;
     
     cmi8788_write_2(&deviceInfo, I2S_MULTICH_FORMAT, sDac);
     cmi8788_write_2(&deviceInfo, I2S_ADC1_FORMAT, sDac);
@@ -397,7 +397,7 @@ IOReturn XonarSTDeluxeAudioDevice::outputMuteChanged(IOAudioControl *muteControl
 {
     IOLog("XonarSTDeluxeAudioDevice[%p]::outputMuteChanged(%p, %d, %d)\n", this, muteControl, (int)oldValue, (int)newValue);
     
-    pcm1796_set_mute(&deviceInfo, newValue);
+    cmi8788_toggle_sound(&deviceInfo, newValue);
     
     return kIOReturnSuccess;
 }

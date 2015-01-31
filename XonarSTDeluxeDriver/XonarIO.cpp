@@ -11,6 +11,49 @@
 
 #include "Xonar.h"
 
+/*
+ * Xonar Essence ST (Deluxe)/STX (II)
+ * ----------------------------------
+ *
+ * CMI8788:
+ *
+ *   I²C <-> PCM1792A (addr 1001100)
+ *       <-> CS2000 (addr 1001110) (ST only)
+ *
+ *   ADC1 MCLK -> REF_CLK of CS2000 (ST only)
+ *
+ *   GPI 0 <- external power present (STX only)
+ *
+ *   GPIO 0 -> enable output to speakers
+ *   GPIO 1 -> route HP to front panel (0) or rear jack (1)
+ *   GPIO 2 -> M0 of CS5381
+ *   GPIO 3 -> M1 of CS5381
+ *   GPIO 4 <- daughterboard detection
+ *   GPIO 5 <- daughterboard detection
+ *   GPIO 6 -> ?
+ *   GPIO 7 -> route output to speaker jacks (0) or HP (1)
+ *   GPIO 8 -> route input jack to line-in (0) or mic-in (1)
+ *
+ * PCM1792A:
+ *
+ *   SCK <- CLK_OUT of CS2000 (ST only)
+ *
+ * CM9780:
+ *
+ *   LINE_OUT -> input of ADC
+ *
+ *   AUX_IN <- aux
+ *   MIC_IN <- mic
+ *
+ *   GPO 0 -> route line-in (0) or AC97 output (1) to CS5381 input
+ *
+ * H6 daughterboard
+ * ----------------
+ *
+ * GPIO 4 <- 0
+ * GPIO 5 <- 0
+ */
+
 /* C-Media CMI8788 interface */
 void cmi8788_write_4(xonar_info* dev, int reg, u_int32_t data)
 {
@@ -123,7 +166,7 @@ void cmi8788_toggle_sound(xonar_info* dev, int output) {
         pcm1796_set_mute(dev, 1);
         data = cmi8788_read_2(dev, GPIO_DATA);
         cmi8788_write_2(dev, GPIO_DATA,
-                        data & dev->output_control_gpio);
+                        data & ~dev->output_control_gpio);
         pcm1796_set_mute(dev, 0);
     }
 }
