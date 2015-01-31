@@ -413,7 +413,7 @@ IOReturn XonarSTDeluxeAudioDevice::outputMuteChanged(IOAudioControl *muteControl
 {
     IOLog("XonarSTDeluxeAudioDevice[%p]::outputMuteChanged(%p, %d, %d)\n", this, muteControl, (int)oldValue, (int)newValue);
     
-    cmi8788_toggle_sound(&deviceInfo, newValue);
+    cmi8788_toggle_sound(&deviceInfo, !newValue);
     
     return kIOReturnSuccess;
 }
