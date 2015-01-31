@@ -13,7 +13,7 @@
 
 #include <IOKit/IOFilterInterruptEventSource.h>
 
-#define INITIAL_SAMPLE_RATE	44100
+#define INITIAL_SAMPLE_RATE	48000
 #define NUM_SAMPLE_FRAMES	16384
 #define NUM_CHANNELS		2
 #define BIT_DEPTH			16
@@ -173,7 +173,6 @@ void XonarSTDeluxeAudioEngine::free()
 IOAudioStream *XonarSTDeluxeAudioEngine::createNewAudioStream(IOAudioStreamDirection direction, IOBufferMemoryDescriptor *sampleBuffer)
 {
     IOAudioStream *audioStream;
-    
     audioStream = new IOAudioStream;
     if (audioStream) {
         if (!audioStream->initWithAudioEngine(this, direction, 1)) {
@@ -182,7 +181,7 @@ IOAudioStream *XonarSTDeluxeAudioEngine::createNewAudioStream(IOAudioStreamDirec
             if(direction == kIOAudioStreamDirectionOutput){
                 IOAudioSampleRate rate;
                 IOAudioStreamFormat format = {
-                    2,												// num channels
+                    2,             					             	// num channels
                     kIOAudioStreamSampleFormatLinearPCM,			// sample format
                     kIOAudioStreamNumericRepresentationSignedInt,	// numeric format
                     BIT_DEPTH,										// bit depth
@@ -192,6 +191,10 @@ IOAudioStream *XonarSTDeluxeAudioEngine::createNewAudioStream(IOAudioStreamDirec
                     true,											// format is mixable
                     0												// driver-defined tag - unused by this driver
                 };
+                
+                if(deviceInfo->pcm1796.has_h6) {
+                    //format.fNumChannels = 8;
+                }
                 
                 // As part of creating a new IOAudioStream, its sample buffer needs to be set
                 // It will automatically create a mix buffer should it be needed
@@ -204,11 +207,12 @@ IOAudioStream *XonarSTDeluxeAudioEngine::createNewAudioStream(IOAudioStreamDirec
                 audioStream->addAvailableFormat(&format, &rate, &rate);
                 rate.whole = 96000;
                 audioStream->addAvailableFormat(&format, &rate, &rate);
-                rate.whole = 192000;
-                audioStream->addAvailableFormat(&format, &rate, &rate);
+                //rate.whole = 192000;
+                //audioStream->addAvailableFormat(&format, &rate, &rate);
                 
                 // Finally, the IOAudioStream's current format needs to be indicated
                 audioStream->setFormat(&format);
+                
             } else {
                 IOAudioSampleRate rate;
                 IOAudioStreamFormat format = {
@@ -294,12 +298,7 @@ IOReturn XonarSTDeluxeAudioEngine::performAudioEngineStart()
 
     cmi8788_write_4(deviceInfo, MULTICH_ADDR, physicalAddressOutput);
     cmi8788_write_4(deviceInfo, MULTICH_SIZE, BUFFER_SIZE / 4 - 1);
-    /* what is this 1024 you ask
-     * i have no idea
-     * oss uses dmap->fragment_size
-     * alsa uses params_period_bytes()
-     */
-    cmi8788_write_4(deviceInfo, MULTICH_FRAG, 65536 / 4 - 1);
+    cmi8788_write_4(deviceInfo, MULTICH_FRAG, BUFFER_SIZE / 4 - 1);
     
     cmi8788_write_1(deviceInfo, MULTICH_MODE, (cmi8788_read_1(deviceInfo, MULTICH_MODE) & ~MULTICH_MODE_CH_MASK) | MULTICH_MODE_2CH);
     

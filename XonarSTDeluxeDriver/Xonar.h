@@ -176,6 +176,9 @@
 #define XONAR_MCLOCK_512	0x20
 
 /* PCM1796 defines */
+#define GPIO_DB_MASK		0x0030
+#define GPIO_DB_H6		    0x0000
+
 /* register 16 */
 #define PCM1796_ATL 		0xff
 
@@ -379,6 +382,7 @@ struct pcm1796_info {
     int 		deemph;
     int 		hp;
     int 		hp_gain;
+    int         has_h6;
 };
 
 struct xonar_info {
@@ -393,12 +397,13 @@ struct xonar_info {
     
     uint16_t model;
     
-    int vol[2];
+    int vol[8];
     int bufmaxsz, bufsz;
     int pnum;
     struct pcm1796_info pcm1796;
-    struct xonar_chinfo chan[2];
+    struct xonar_chinfo chan[8];
     
+    int num_channels;
     int anti_pop_delay;
     int output_control_gpio;
 };

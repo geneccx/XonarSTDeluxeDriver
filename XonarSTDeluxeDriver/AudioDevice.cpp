@@ -76,13 +76,23 @@ bool XonarSTDeluxeAudioDevice::initHardware(IOService *provider)
     bVal |= FUNCTION_RESET_CODEC;
     cmi8788_write_1(&deviceInfo, FUNCTION, bVal);
     
+    // figure out if the daughterboard is attached
+    sVal = cmi8788_read_2(&deviceInfo, GPIO_CONTROL);
+    cmi8788_write_2(&deviceInfo, GPIO_CONTROL, sVal & ~GPIO_DB_MASK);
+    sVal = cmi8788_read_2(&deviceInfo, GPIO_DATA) & GPIO_DB_MASK;
+    if(sVal == GPIO_DB_H6) {
+        // found H6 daughterboard!
+        deviceInfo.pcm1796.has_h6 = 1;
+        IOLog("XonarSTDeluxeAudioDevice[%p]::initHardware(%p) H6 daughterboard detected\n", this, provider);
+    }
+    
     /* set up DAC related settings */
-    sDac = I2S_MASTER | I2S_FMT_RATE44 | I2S_FMT_LJUST | I2S_FMT_BITS16 | XONAR_MCLOCK_256;
+    sDac = I2S_MASTER | I2S_FMT_RATE48 | I2S_FMT_LJUST | I2S_FMT_BITS16 | (deviceInfo.pcm1796.has_h6 ? XONAR_MCLOCK_256 : XONAR_MCLOCK_512);
     
     cmi8788_write_2(&deviceInfo, I2S_MULTICH_FORMAT, sDac);
-    cmi8788_write_2(&deviceInfo, I2S_ADC1_FORMAT, sDac);
-    cmi8788_write_2(&deviceInfo, I2S_ADC2_FORMAT, sDac);
-    cmi8788_write_2(&deviceInfo, I2S_ADC3_FORMAT, sDac);
+    //cmi8788_write_2(&deviceInfo, I2S_ADC1_FORMAT, sDac);
+    //cmi8788_write_2(&deviceInfo, I2S_ADC2_FORMAT, sDac);
+    //cmi8788_write_2(&deviceInfo, I2S_ADC3_FORMAT, sDac);
     
     /* setup routing regs with default values */
     cmi8788_write_2(&deviceInfo, PLAY_ROUTING, 0xE400);
@@ -150,8 +160,14 @@ bool XonarSTDeluxeAudioDevice::initHardware(IOService *provider)
     if (cmi8788_read_1(&deviceInfo, MISC_REG) & MISC_MIDI)
         IOLog("XonarSTDeluxeAudioDevice[%p]::initHardware(%p) MPU401 found\n", this, provider);
     
-    setDeviceName("Xonar Essence ST Deluxe");
-    setDeviceShortName("Xonar ST+H6");
+    if(deviceInfo.pcm1796.has_h6) {
+        setDeviceName("Xonar Essence ST + H6");
+        setDeviceShortName("Xonar ST + H6");
+    } else {
+        setDeviceName("Xonar Essence ST");
+        setDeviceShortName("Xonar ST");
+    }
+    
     setManufacturerName("ASUS");
         
     if (!createAudioEngine()) {
