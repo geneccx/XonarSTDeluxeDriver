@@ -52,18 +52,8 @@ bool XonarSTDeluxeAudioDevice::initHardware(IOService *provider)
         goto Done;
     }
     
-    // Get the virtual address for the registers - mapped in the kernel address space
-    /*deviceRegisters = (XonarSTDeluxeAudioDeviceRegisters *)deviceMap->getVirtualAddress();
-    if (!deviceRegisters) {
-        goto Done;
-    }*/
-    
     deviceInfo.pciDevice->setIOEnable(true);
     deviceInfo.pciDevice->setBusMasterEnable(true);
-    
-    // Enable the PCI memory access - the kernel will panic if this isn't done before accessing the
-    // mapped registers
-    deviceInfo.pciDevice->setMemoryEnable(true);
     
     /* Init CMI controller */
     sVal = cmi8788_read_2(&deviceInfo, CTRL_VERSION);
