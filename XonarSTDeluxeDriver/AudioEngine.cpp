@@ -339,12 +339,10 @@ UInt32 XonarSTDeluxeAudioEngine::getCurrentSampleFrame()
     // frame returned by this function.  If it is too large a value, sound data that hasn't been played will be
     // erased.
     
-    UInt32 ptr = cmi8788_read_4(deviceInfo, MULTICH_ADDR);
-    ptr -= physicalAddressOutput;
-    //ptr %=
-    
-    // voodoo magic? 2 channels x 4
-    return ptr / (2 * 4);
+    UInt32 cur_addr = cmi8788_read_4(deviceInfo, MULTICH_ADDR);
+    // bytes_to_frames(runtime, curr_addr - (u32)runtime->dma_addr);
+    // return ptr * 8 / snd_pcm_format_physical_width(pcm->format) * pcm->channels;
+    return (cur_addr - physicalAddressOutput) * 8 / (BIT_DEPTH * NUM_CHANNELS);
 }
 
 IOReturn XonarSTDeluxeAudioEngine::performFormatChange(IOAudioStream *audioStream, const IOAudioStreamFormat *newFormat, const IOAudioSampleRate *newSampleRate)
@@ -372,7 +370,7 @@ IOReturn XonarSTDeluxeAudioEngine::performFormatChange(IOAudioStream *audioStrea
                 break;
                 
             case 192000:
-                IOLog("/t-> 192kHz selected\n");
+            IOLog("/t-> 192kHz selected\n");
                 fSampleRate = I2S_FMT_RATE192;
                 break;
                 
