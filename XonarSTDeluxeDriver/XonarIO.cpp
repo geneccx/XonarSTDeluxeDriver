@@ -130,10 +130,29 @@ void pcm1796_set_mute(xonar_info* dev, int mute)
         pcm1796_write(dev, XONAR_STX_FRONTDAC, 18, reg & ~PCM1796_MUTE);
 }
 
+// Generated logarithmic value lookup table:
+//
+// textwrap.wrap(', '.join(['  0'] + [
+//     format(math.log(x) / math.log(100) * 255, '>3.0f')
+//     for x in range(1, 101)
+// ]))
+//
+static const uint8_t vol_scale_table[] =
+{
+      0,   0,  38,  61,  77,  89,  99, 108, 115, 122, 128, 133, 138, 142,
+    146, 150, 154, 157, 160, 163, 166, 169, 171, 174, 176, 178, 180, 182,
+    185, 186, 188, 190, 192, 194, 195, 197, 198, 200, 201, 203, 204, 206,
+    207, 208, 210, 211, 212, 213, 214, 216, 217, 218, 219, 220, 221, 222,
+    223, 224, 225, 226, 227, 228, 229, 229, 230, 231, 232, 233, 234, 234,
+    235, 236, 237, 238, 238, 239, 240, 241, 241, 242, 243, 243, 244, 245,
+    245, 246, 247, 247, 248, 249, 249, 250, 250, 251, 252, 252, 253, 253,
+    254, 254, 255
+};
+
 unsigned int pcm1796_vol_scale(int vol)
 {
-    /* 0-14 - mute, 255 - max */
-    return (vol * 241)/100;
+    // Apply logarithmic volume scale.
+    return vol_scale_table[min(max(vol, 0), sizeof(vol_scale_table))];
 }
 
 void pcm1796_set_left_volume(xonar_info* dev, int left)
