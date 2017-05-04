@@ -22,6 +22,19 @@
 	<string>1</string>
 	<key>IOKitPersonalities</key>
 	<dict>
+		<key>XonarSTXDeluxeDriver</key>
+		<dict>
+			<key>CFBundleIdentifier</key>
+			<string>com.GeneC.driver.XonarSTDeluxeDriver</string>
+			<key>IOClass</key>
+			<string>com_GeneC_driver_XonarSTDeluxeDevice</string>
+			<key>IOPCIPrimaryMatch</key>
+			<string>0x878813F6</string>
+			<key>IOPCISecondaryMatch</key>
+			<string>0x835C1043</string>
+			<key>IOProviderClass</key>
+			<string>IOPCIDevice</string>
+		</dict>
 		<key>XonarSTDeluxeDriver</key>
 		<dict>
 			<key>CFBundleIdentifier</key>

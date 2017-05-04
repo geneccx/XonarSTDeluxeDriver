@@ -32,6 +32,7 @@ bool XonarSTDeluxeAudioDevice::initHardware(IOService *provider)
     UInt16 sDac = 0;
     UInt8 bVal = 0;
     int count = 0;
+    uint16_t devSubId = 0;
     
     IOLog("XonarSTDeluxeAudioDevice[%p]::initHardware(%p)\n", this, provider);
     
@@ -150,15 +151,27 @@ bool XonarSTDeluxeAudioDevice::initHardware(IOService *provider)
     if (cmi8788_read_1(&deviceInfo, MISC_REG) & MISC_MIDI)
         IOLog("XonarSTDeluxeAudioDevice[%p]::initHardware(%p) MPU401 found\n", this, provider);
     
-    if(deviceInfo.pcm1796.has_h6) {
-        setDeviceName("Xonar Essence ST + H6");
-        setDeviceShortName("Xonar ST + H6");
+    devSubId = deviceInfo.pciDevice->configRead16(kIOPCIConfigSubSystemID);
+    if (devSubId == SUBID_XONAR_ST) {
+        if(deviceInfo.pcm1796.has_h6) {
+            deviceInfo.deviceName = "Xonar Essence ST + H6";
+            deviceInfo.deviceShortName = "Xonar ST + H6";
+        } else {
+            deviceInfo.deviceName = "Xonar Essence ST";
+            deviceInfo.deviceShortName = "Xonar ST";
+        }
+    } else if (devSubId == SUBID_XONAR_STX) {
+        // STX doesn't support H6 (to my knowledge).
+        deviceInfo.deviceName = "Xonar Essence STX";
+        deviceInfo.deviceShortName = "Xonar STX";
     } else {
-        setDeviceName("Xonar Essence ST");
-        setDeviceShortName("Xonar ST");
+        deviceInfo.deviceName = "Unknown Xonar device";
+        deviceInfo.deviceShortName = "Xonar device";
     }
     
     setManufacturerName("ASUS");
+    setDeviceName(deviceInfo.deviceName);
+    setDeviceShortName(deviceInfo.deviceShortName);
         
     if (!createAudioEngine()) {
         goto Done;
