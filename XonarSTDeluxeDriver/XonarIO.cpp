@@ -137,7 +137,7 @@ void pcm1796_set_mute(xonar_info* dev, int mute)
 //     for x in range(1, 101)
 // ]))
 //
-static const uint8_t vol_scale_table[] =
+static const uint8_t volScaleTable[] =
 {
       0,   0,  38,  61,  77,  89,  99, 108, 115, 122, 128, 133, 138, 142,
     146, 150, 154, 157, 160, 163, 166, 169, 171, 174, 176, 178, 180, 182,
@@ -152,7 +152,7 @@ static const uint8_t vol_scale_table[] =
 unsigned int pcm1796_vol_scale(int vol)
 {
     // Apply logarithmic volume scale.
-    return vol_scale_table[min(max(vol, 0), sizeof(vol_scale_table))];
+    return volScaleTable[min(max(vol, 0), sizeof(volScaleTable))];
 }
 
 void pcm1796_set_left_volume(xonar_info* dev, int left)

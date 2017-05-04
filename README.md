@@ -1,5 +1,5 @@
 # XonarSTDeluxeDriver
-A very hacky port of the Xonar Essence ST driver for Linux to OSX.
+A very hacky port of the Xonar Essence ST/STX driver for Linux to OSX.
 See: https://github.com/polachok/xonar-freebsd
 
 Working:
@@ -13,4 +13,3 @@ Known Issues:
 - No support for input devices yet
 - Device fails to wake on sleep. Probably need to implement power management
 - The DMA buffer is a giant contiguous chunk of memory. I think this makes the latency pretty bad
-- The volume scaling is non-existent - it's a straight linear value from 0-100 which makes the volume settings in OSX very difficult to use

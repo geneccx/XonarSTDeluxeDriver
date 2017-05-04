@@ -406,6 +406,9 @@ struct xonar_info {
     int num_channels;
     int anti_pop_delay;
     int output_control_gpio;
+    
+    const char* deviceName;
+    const char* deviceShortName;
 };
 
 #endif
